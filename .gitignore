@@ -1,0 +1,86 @@
+# Build and generated output
+**/target/
+**/dist/
+**/build/
+**/out/
+**/out-tsc/
+**/.angular/
+**/coverage/
+**/playwright-report/
+**/test-results/
+**/reports/
+**/*.class
+*.jar
+*.war
+*.nar
+
+# Dependencies and package-manager caches
+**/node_modules/
+**/.npm-cache/
+**/.npm/
+**/.yarn/
+**/.pnpm-store/
+**/.gradle/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+**/application-local.*
+**/application-*.local.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Logs, reports, databases, and local runtime data
+*.log
+*.out
+*.pid
+*.pid.lock
+*.sqlite
+*.sqlite3
+*.db
+*.h2.db
+.local/
+tools/
+tmp/
+temp/
+infrastructure/keycloak/import/*.json.tmp
+
+# IDE and editor files
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.iml
+*.iws
+*.ipr
+*.swp
+*.swo
+*~
+*.bak
+*.backup
+*.orig
+*.sublime-workspace
+*.sublime-project
+
+# Temporary backup and review folders
+.bankops-review-backup-*/
+.bankops-*-backup-*/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local installers and archives
+*.deb
+*.rpm
+*.dmg
+*.iso
+*.tar
+*.tar.gz
+*.zip

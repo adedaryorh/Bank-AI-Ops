@@ -1,0 +1,147 @@
+{
+  "realm": "bankops",
+  "enabled": true,
+  "displayName": "BankOps AI",
+  "displayNameHtml": "BankOps <b>AI</b>",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "rememberMe": false,
+  "sslRequired": "external",
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Platform administration" },
+      { "name": "OPERATIONS_OFFICER", "description": "Banking operations" },
+      { "name": "COMPLIANCE_ANALYST", "description": "Compliance analysis" },
+      { "name": "AML_ANALYST", "description": "Anti-money-laundering analysis" },
+      { "name": "SUPERVISOR", "description": "Reviews and escalations" },
+      { "name": "AUDITOR", "description": "Read-only audit access" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "bankops-frontend",
+      "name": "BankOps AI web client",
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:4200/*",
+        "http://127.0.0.1:4200/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200",
+        "http://127.0.0.1:4200"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4200/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "bankops-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "bankops-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "department",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "department",
+            "claim.name": "department",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "bankops-api",
+      "name": "BankOps AI API (resource server)",
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@bankops.local",
+      "email": "admin@bankops.local",
+      "firstName": "Anna",
+      "lastName": "Admin",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "department": ["OPS"] },
+      "realmRoles": ["ADMIN"],
+      "credentials": [{ "type": "password", "value": "demo1234", "temporary": false }]
+    },
+    {
+      "username": "ops@bankops.local",
+      "email": "ops@bankops.local",
+      "firstName": "Otto",
+      "lastName": "Operations",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "department": ["OPS"] },
+      "realmRoles": ["OPERATIONS_OFFICER"],
+      "credentials": [{ "type": "password", "value": "demo1234", "temporary": false }]
+    },
+    {
+      "username": "compliance@bankops.local",
+      "email": "compliance@bankops.local",
+      "firstName": "Clara",
+      "lastName": "Compliance",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "department": ["COMPLIANCE"] },
+      "realmRoles": ["COMPLIANCE_ANALYST"],
+      "credentials": [{ "type": "password", "value": "demo1234", "temporary": false }]
+    },
+    {
+      "username": "aml@bankops.local",
+      "email": "aml@bankops.local",
+      "firstName": "Aylin",
+      "lastName": "Analyst",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "department": ["AML"] },
+      "realmRoles": ["AML_ANALYST"],
+      "credentials": [{ "type": "password", "value": "demo1234", "temporary": false }]
+    },
+    {
+      "username": "supervisor@bankops.local",
+      "email": "supervisor@bankops.local",
+      "firstName": "Stefan",
+      "lastName": "Supervisor",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "department": ["RISK"] },
+      "realmRoles": ["SUPERVISOR"],
+      "credentials": [{ "type": "password", "value": "demo1234", "temporary": false }]
+    },
+    {
+      "username": "auditor@bankops.local",
+      "email": "auditor@bankops.local",
+      "firstName": "Anna",
+      "lastName": "Auditor",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "department": ["AUDIT"] },
+      "realmRoles": ["AUDITOR"],
+      "credentials": [{ "type": "password", "value": "demo1234", "temporary": false }]
+    }
+  ]
+}
