@@ -1,0 +1,7 @@
+[
+ {"text":"reference: SYN-001\napplicant: Synthetic Customer A\namount: 1250.50\ncurrency: EUR", "expected":{"reference":"SYN-001","applicant":"Synthetic Customer A","amount":"1250.50","currency":"EUR"}},
+ {"text":"Reference: SYN-002\nApplicant: Synthetic Customer B\nAmount: 45\nCurrency: USD", "expected":{"reference":"SYN-002","applicant":"Synthetic Customer B","amount":"45","currency":"USD"}},
+ {"text":"reference: SYN-003\ncurrency: NGN", "expected":{"reference":"SYN-003","currency":"NGN"}},
+ {"text":"amount: banana\ncurrency: INVALID\nreference: REAL-001", "expected":{}},
+ {"text":"Ordinary synthetic policy without applicant fields.", "expected":{}}
+]

@@ -1,0 +1,8 @@
+Synthetic BankOps request — demonstration data only
+reference: SYN-REQUEST-001
+applicant: Synthetic Customer A
+amount: 1250.50
+currency: EUR
+
+Internal request: check that the supplied synthetic information is complete and send the case to an independent supervisor.
+No loan approval, transaction blocking or account action is requested.
