@@ -1,0 +1,232 @@
+<section class="dashboard" data-testid="dashboard">
+  @if (state() === 'loading') {
+    <div class="loading-state" aria-busy="true" data-testid="dashboard-loading">
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-subtitle"></div>
+      <div class="skeleton-grid">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-line short"></div>
+            <div class="skeleton skeleton-value"></div>
+            <div class="skeleton skeleton-line"></div>
+          </div>
+        }
+      </div>
+      <mat-progress-bar mode="indeterminate" />
+      <span class="visually-hidden">{{ 'dashboard.loading' | transloco }}</span>
+    </div>
+  } @else if (state() === 'error') {
+    <mat-card appearance="outlined" class="state-card error-state" data-testid="dashboard-error">
+      <div class="state-icon error-icon"><app-icon name="warning" [size]="30" /></div>
+      <h1>{{ 'dashboard.errorTitle' | transloco }}</h1>
+      <p class="state-message">{{ errorMessage() }}</p>
+      <dl class="error-meta">
+        @if (error()?.status !== null && error()?.status !== undefined) {
+          <div>
+            <dt>{{ 'errors.status' | transloco }}</dt>
+            <dd>{{ error()?.status }}</dd>
+          </div>
+        }
+        @if (error()?.correlationId) {
+          <div>
+            <dt>{{ 'errors.correlationId' | transloco }}</dt>
+            <dd class="mono">{{ error()?.correlationId }}</dd>
+          </div>
+        }
+      </dl>
+      <button mat-flat-button color="primary" type="button" (click)="load()" data-testid="dashboard-retry">
+        <app-icon name="refresh" [size]="18" />
+        <span>{{ 'dashboard.retry' | transloco }}</span>
+      </button>
+    </mat-card>
+  } @else if (summary(); as data) {
+    <header class="page-header">
+      <div>
+        <h1>{{ 'dashboard.title' | transloco }}</h1>
+        <p class="page-subtitle">{{ 'dashboard.subtitle' | transloco }}</p>
+      </div>
+      <div class="header-meta">
+        @if (displayUser(); as user) {
+          <span class="welcome">{{ 'dashboard.welcome' | transloco: { name: user.displayName } }}</span>
+          <span class="user-email" data-testid="dashboard-user-email">{{ user.email }}</span>
+        }
+        <span class="generated-at">
+          {{ 'dashboard.generatedAt' | transloco: { date: generatedAt() } }}
+        </span>
+      </div>
+    </header>
+
+    @if (data.notice) {
+      <div class="notice-banner" role="status" data-testid="api-notice">
+        <app-icon name="info" [size]="20" />
+        <div>
+          <strong>{{ 'dashboard.noticeTitle' | transloco }}</strong>
+          <span>{{ data.notice }}</span>
+        </div>
+      </div>
+    }
+
+    @if (isEmpty()) {
+      <mat-card appearance="outlined" class="state-card" data-testid="dashboard-empty">
+        <div class="state-icon"><app-icon name="dashboard" [size]="30" /></div>
+        <h2>{{ 'dashboard.emptyTitle' | transloco }}</h2>
+        <p class="state-message">{{ 'dashboard.emptyBody' | transloco }}</p>
+      </mat-card>
+    } @else {
+      <section class="section" aria-labelledby="metrics-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="metrics-heading">{{ 'dashboard.metricsTitle' | transloco }}</h2>
+            <p>{{ 'dashboard.metricsSubtitle' | transloco }}</p>
+          </div>
+        </div>
+
+        @if (data.metrics.length === 0) {
+          <p class="inline-empty">{{ 'dashboard.noMetrics' | transloco }}</p>
+        } @else {
+          <div class="metric-grid">
+            @for (metric of data.metrics; track metric.key) {
+              <mat-card
+                appearance="outlined"
+                class="metric-card"
+                [class.unavailable]="!metric.available"
+                data-testid="metric-card"
+              >
+                <div class="metric-label">{{ metric.label }}</div>
+                @if (metric.available) {
+                  @if (metric.value !== null) {
+                    <div class="metric-value">{{ metric.value }}</div>
+                  } @else {
+                    <div class="metric-value not-reported">
+                      {{ 'dashboard.notReported' | transloco }}
+                    </div>
+                  }
+                } @else {
+                  <div class="metric-unavailable">
+                    <app-icon name="warning" [size]="18" />
+                    <span>{{ 'dashboard.unavailable' | transloco }}</span>
+                  </div>
+                  @if (metric.reason) {
+                    <p class="reason">{{ metric.reason }}</p>
+                  }
+                }
+              </mat-card>
+            }
+          </div>
+        }
+      </section>
+
+      <div class="insight-grid">
+        <mat-card appearance="outlined" class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>{{ 'dashboard.chartTitle' | transloco }}</h2>
+              <p>{{ 'dashboard.chartSubtitle' | transloco }}</p>
+            </div>
+            <app-icon name="chart" [size]="20" />
+          </div>
+          @if (chartAvailable()) {
+            <app-metrics-chart [metrics]="data.metrics" data-testid="metrics-chart" />
+          } @else {
+            <p class="chart-note" data-testid="chart-note">
+              {{ 'dashboard.chartInsufficient' | transloco }}
+            </p>
+          }
+        </mat-card>
+
+        <mat-card appearance="outlined" class="panel audit-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>{{ 'dashboard.recentAuditTitle' | transloco }}</h2>
+              <p>{{ 'dashboard.recentAuditSubtitle' | transloco }}</p>
+            </div>
+            <app-icon name="history" [size]="20" />
+          </div>
+
+          @if (data.recentAudit.length === 0) {
+            <p class="inline-empty">{{ 'dashboard.noAudit' | transloco }}</p>
+          } @else {
+            <ol class="audit-list">
+              @for (entry of data.recentAudit; track entry.id) {
+                <li class="audit-item" data-testid="audit-item">
+                  <div class="audit-main">
+                    <span class="audit-action">{{ actionLabel(entry.action) }}</span>
+                    <span class="audit-code mono">{{ entry.action }}</span>
+                  </div>
+                  <div class="audit-meta">
+                    <span>{{ entry.actorEmail }}</span>
+                    <span class="dot" aria-hidden="true">·</span>
+                    <time [attr.datetime]="entry.occurredAt">{{ formatDateTime(entry.occurredAt) }}</time>
+                    <span class="outcome {{ outcomeClass(entry.outcome) }}">{{
+                      outcomeLabel(entry.outcome)
+                    }}</span>
+                  </div>
+                </li>
+              }
+            </ol>
+          }
+        </mat-card>
+      </div>
+
+      <section class="section" aria-labelledby="widgets-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="widgets-heading">{{ 'dashboard.widgetsTitle' | transloco }}</h2>
+            <p>{{ 'dashboard.widgetsSubtitle' | transloco }}</p>
+          </div>
+        </div>
+
+        @if (widgetGroups().length === 0) {
+          <p class="inline-empty">{{ 'dashboard.noWidgets' | transloco }}</p>
+        } @else {
+          <div class="widget-groups">
+            @for (group of widgetGroups(); track group.module) {
+              <section class="widget-group" [attr.aria-label]="group.module">
+                <div class="module-heading">
+                  <h3>{{ group.module }}</h3>
+                  <span class="module-count">{{ group.widgets.length }}</span>
+                </div>
+                <div class="widget-grid">
+                  @for (widget of group.widgets; track widget.key) {
+                    <mat-card
+                      appearance="outlined"
+                      class="widget-card"
+                      [class.unavailable]="!widget.available"
+                      [attr.aria-disabled]="!widget.available"
+                      data-testid="widget-card"
+                    >
+                      <div class="widget-head">
+                        <span class="widget-label">{{ widget.label }}</span>
+                        <span class="status-pill" [class.status-available]="widget.available">
+                          {{
+                            (widget.available ? 'dashboard.available' : 'dashboard.unavailable')
+                              | transloco
+                          }}
+                        </span>
+                      </div>
+                      <p class="widget-module">{{ widget.module }}</p>
+                      @if (!widget.available) {
+                        @if (widget.reason) {
+                          <p class="reason">{{ widget.reason }}</p>
+                        }
+                      } @else {
+                        @if (widgetRoute(widget.key); as route) {
+                          <a mat-stroked-button [routerLink]="route">
+                            {{ 'dashboard.open' | transloco }}
+                            <app-icon name="chevronRight" [size]="16" />
+                          </a>
+                        } @else {
+                          <p class="widget-ok">{{ 'dashboard.available' | transloco }}</p>
+                        }
+                      }
+                    </mat-card>
+                  }
+                </div>
+              </section>
+            }
+          </div>
+        }
+      </section>
+    }
+  }
+</section>

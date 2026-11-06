@@ -1,0 +1,8 @@
+node_modules
+dist
+.angular
+.npm-cache
+coverage
+playwright-report
+test-results
+.git

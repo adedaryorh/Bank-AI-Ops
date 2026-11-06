@@ -1,0 +1,47 @@
+<header>
+  <div>
+    <h1>{{ 'work.policies' | transloco }}</h1>
+    <p class="intro">{{ 'work.policyIntro' | transloco }}</p>
+  </div>
+  <a mat-stroked-button routerLink="/documents">{{ 'work.sourceLibrary' | transloco }}</a>
+</header>
+<app-workspace-status [busy]="busy()" [error]="error()" />
+<p class="notice">{{ 'work.policyNotice' | transloco }}</p>
+<section class="panel">
+  <form [formGroup]="form" (ngSubmit)="ask()">
+    <mat-form-field
+      ><mat-label>{{ 'work.question' | transloco }}</mat-label
+      ><textarea
+        matInput
+        formControlName="question"
+        rows="4"
+        maxlength="1500"
+      ></textarea></mat-form-field
+    ><button mat-flat-button type="submit" [disabled]="busy() || form.invalid">
+      {{ 'work.ask' | transloco }}
+    </button>
+  </form>
+</section>
+@if (answer(); as result) {
+  <section class="panel" aria-live="polite">
+    <h2>{{ (result.abstained ? 'work.noEvidence' : 'work.evidence') | transloco }}</h2>
+    <p>{{ result.answer }}</p>
+    <p class="meta">
+      {{ result.model }} · {{ 'work.execution' | transloco }} {{ result.executionId }}
+    </p>
+    @for (citation of result.citations; track citation.chunkId) {
+      <article>
+        <h3>{{ citation.filename }}</h3>
+        <blockquote>{{ citation.quote }}</blockquote>
+        <p class="meta">{{ 'work.chunk' | transloco }} {{ citation.chunkId }}</p>
+        <button
+          mat-stroked-button
+          (click)="download(citation.documentId, citation.filename)"
+          [disabled]="busy()"
+        >
+          {{ 'work.downloadSource' | transloco }}
+        </button>
+      </article>
+    }
+  </section>
+}

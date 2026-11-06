@@ -1,0 +1,223 @@
+<div class="shell" [class.sidebar-collapsed]="collapsed() && !isMobile()">
+  @if (isMobile() && mobileOpen()) {
+    <button
+      class="nav-backdrop"
+      type="button"
+      [attr.aria-label]="'nav.closeMenu' | transloco"
+      (click)="closeMobileNavigation()"
+    ></button>
+  }
+
+  <aside
+    class="sidebar"
+    [class.collapsed]="collapsed() && !isMobile()"
+    [class.mobile-open]="isMobile() && mobileOpen()"
+  >
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">BO</span>
+      <span class="brand-text">
+        <span class="brand-name">{{ 'app.name' | transloco }}</span>
+        <span class="brand-tagline">{{ 'app.tagline' | transloco }}</span>
+      </span>
+    </div>
+
+    <nav class="nav" [attr.aria-label]="'nav.primary' | transloco">
+      <a
+        class="nav-link"
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [attr.title]="collapsed() ? ('nav.dashboard' | transloco) : null"
+        (click)="closeMobileNavigation()"
+      >
+        <app-icon name="dashboard" />
+        <span class="nav-label">{{ 'nav.dashboard' | transloco }}</span>
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/cases"
+        routerLinkActive="active"
+        (click)="closeMobileNavigation()"
+        ><app-icon name="dashboard" /><span class="nav-label">{{
+          'work.cases' | transloco
+        }}</span></a
+      >
+      <a
+        class="nav-link"
+        routerLink="/documents"
+        routerLinkActive="active"
+        (click)="closeMobileNavigation()"
+        ><app-icon name="dashboard" /><span class="nav-label">{{
+          'work.documents' | transloco
+        }}</span></a
+      >
+      <a
+        class="nav-link"
+        routerLink="/policies"
+        routerLinkActive="active"
+        (click)="closeMobileNavigation()"
+        ><app-icon name="dashboard" /><span class="nav-label">{{
+          'work.policies' | transloco
+        }}</span></a
+      >
+      @if (
+        roles().includes('ADMIN') ||
+        roles().includes('AML_ANALYST') ||
+        roles().includes('SUPERVISOR') ||
+        roles().includes('AUDITOR')
+      ) {
+        <a
+          class="nav-link"
+          routerLink="/aml"
+          routerLinkActive="active"
+          (click)="closeMobileNavigation()"
+          ><app-icon name="dashboard" /><span class="nav-label">{{
+            'work.aml' | transloco
+          }}</span></a
+        >
+      }
+      <a
+        class="nav-link"
+        routerLink="/activity"
+        routerLinkActive="active"
+        (click)="closeMobileNavigation()"
+        ><app-icon name="history" /><span class="nav-label">{{
+          'work.activity' | transloco
+        }}</span></a
+      >
+
+      @if (roles().includes('ADMIN') || roles().includes('SUPERVISOR')) {
+        <a
+          class="nav-link"
+          routerLink="/reviews"
+          routerLinkActive="active"
+          (click)="closeMobileNavigation()"
+        >
+          <app-icon name="history" /><span class="nav-label">{{
+            'work.reviewQueue' | transloco
+          }}</span>
+        </a>
+      }
+      @if (auth.isAdmin()) {
+        <a
+          class="nav-link"
+          routerLink="/admin/users"
+          routerLinkActive="active"
+          [attr.title]="collapsed() ? ('nav.adminUsers' | transloco) : null"
+          (click)="closeMobileNavigation()"
+        >
+          <app-icon name="users" />
+          <span class="nav-label">{{ 'nav.adminUsers' | transloco }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <app-icon name="lock" [size]="16" />
+      <span class="nav-label">OIDC · PKCE S256</span>
+    </div>
+  </aside>
+
+  <div class="main-column">
+    <header class="topbar">
+      <button
+        mat-icon-button
+        type="button"
+        class="nav-toggle"
+        (click)="toggleNavigation()"
+        [attr.aria-label]="
+          isMobile()
+            ? mobileOpen()
+              ? ('nav.closeMenu' | transloco)
+              : ('nav.openMenu' | transloco)
+            : collapsed()
+              ? ('nav.expand' | transloco)
+              : ('nav.collapse' | transloco)
+        "
+        [attr.aria-expanded]="isMobile() ? mobileOpen() : !collapsed()"
+      >
+        <app-icon name="menu" />
+      </button>
+
+      <div class="app-title">
+        <span class="app-title-name">{{ 'app.name' | transloco }}</span>
+        <span class="app-title-subtitle">{{ 'app.tagline' | transloco }}</span>
+      </div>
+
+      <span class="spacer"></span>
+
+      <mat-button-toggle-group
+        class="language-switch"
+        [value]="language.activeLang()"
+        [attr.aria-label]="'topbar.language' | transloco"
+        (change)="setLanguage($event.value)"
+      >
+        <mat-button-toggle value="en">EN</mat-button-toggle>
+        <mat-button-toggle value="de">DE</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <button
+        mat-icon-button
+        type="button"
+        class="theme-toggle"
+        (click)="theme.toggle()"
+        [matTooltip]="
+          (theme.mode() === 'light' ? 'topbar.darkTheme' : 'topbar.lightTheme') | transloco
+        "
+        [attr.aria-label]="'topbar.theme' | transloco"
+      >
+        <app-icon [name]="theme.mode() === 'light' ? 'moon' : 'sun'" />
+      </button>
+
+      <button
+        mat-button
+        type="button"
+        class="user-button"
+        [matMenuTriggerFor]="userMenu"
+        [attr.aria-label]="'topbar.account' | transloco"
+      >
+        <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+        <span class="user-button-text">
+          <span class="user-button-name">{{ displayName() }}</span>
+          <span class="user-button-department">{{ department() }}</span>
+        </span>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-menu" xPosition="before">
+        <div class="user-menu-card">
+          <div class="user-menu-name">{{ displayName() }}</div>
+          <div class="user-menu-email">{{ auth.user()?.email }}</div>
+          <div class="user-menu-department">
+            <span class="meta-label">{{ 'topbar.department' | transloco }}</span>
+            {{ department() }}
+          </div>
+          <div class="user-menu-roles">
+            <span class="meta-label">{{ 'topbar.roles' | transloco }}</span>
+            <span class="role-chips">
+              @for (role of roles(); track role) {
+                <span class="role-chip">{{ 'roles.' + role | transloco }}</span>
+              } @empty {
+                <span class="muted">—</span>
+              }
+            </span>
+          </div>
+        </div>
+        <mat-divider />
+        <button mat-menu-item type="button" (click)="logout()">
+          <app-icon name="logout" />
+          <span class="menu-item-label">{{ 'topbar.logout' | transloco }}</span>
+        </button>
+      </mat-menu>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+
+    <footer class="footer">
+      <app-icon name="info" [size]="18" />
+      <span>{{ 'app.footerNotice' | transloco }}</span>
+    </footer>
+  </div>
+</div>

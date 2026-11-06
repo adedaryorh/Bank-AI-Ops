@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  max-width: 1200px;
+  margin: auto;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+h1 {
+  font-size: 1.9rem;
+  margin: 0.2rem 0;
+}
+h2 {
+  font-size: 1.2rem;
+}
+p {
+  line-height: 1.6;
+}
+.intro,
+.muted {
+  opacity: 0.75;
+}
+.panel {
+  padding: 1.4rem;
+  border: 1px solid var(--mat-sys-outline-variant, #d7dce3);
+  border-radius: 16px;
+  margin: 1.2rem 0;
+  background: var(--mat-sys-surface, #fff);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.stack {
+  display: grid;
+  gap: 1rem;
+}
+mat-form-field {
+  width: 100%;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.notice {
+  border-left: 4px solid #247a84;
+  padding: 0.7rem 1rem;
+  background: var(--mat-sys-surface-container, #eef6f8);
+}
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+th,
+td {
+  padding: 1rem 0.65rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #d7dce3);
+  vertical-align: top;
+}
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.status {
+  display: inline-block;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 24px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.8rem;
+}
+a {
+  color: var(--mat-sys-primary, #135b9d);
+}
+blockquote {
+  margin: 1rem 0;
+  border-left: 3px solid #247a84;
+  padding: 1rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--mat-sys-surface-container);
+}
+.body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.meta {
+  font-family: monospace;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.timeline {
+  padding-left: 1.5rem;
+}
+.timeline li {
+  padding: 0.7rem;
+}
+.check {
+  margin-bottom: 1rem;
+}
+code {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 650px) {
+  .panel {
+    padding: 1rem;
+  }
+  th,
+  td {
+    padding: 0.7rem 0.4rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+  }
+}

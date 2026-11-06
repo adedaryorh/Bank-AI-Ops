@@ -1,0 +1,90 @@
+<header>
+  <div>
+    <h1>{{ 'work.documents' | transloco }}</h1>
+    <p class="intro">{{ 'work.documentIntro' | transloco }}</p>
+  </div>
+  <button mat-stroked-button (click)="load(result()?.page ?? 0)" [disabled]="busy()">
+    {{ 'work.refresh' | transloco }}
+  </button>
+</header>
+<app-workspace-status [busy]="busy()" [error]="error()" />
+<section class="panel">
+  <form [formGroup]="form" (ngSubmit)="upload()" class="stack">
+    <div class="grid">
+      <mat-form-field
+        ><mat-label>{{ 'work.purpose' | transloco }}</mat-label
+        ><mat-select formControlName="purpose" (selectionChange)="load()"
+          ><mat-option value="POLICY">{{ 'work.policies' | transloco }}</mat-option
+          ><mat-option value="CASE">{{ 'work.cases' | transloco }}</mat-option></mat-select
+        ></mat-form-field
+      >
+      @if (form.controls.purpose.value === 'CASE') {
+        <mat-form-field
+          ><mat-label>{{ 'work.caseId' | transloco }}</mat-label
+          ><input matInput formControlName="caseId" /><mat-hint>{{
+            'work.caseIdHint' | transloco
+          }}</mat-hint></mat-form-field
+        ><button mat-stroked-button type="button" (click)="load()" [disabled]="busy()">
+          {{ 'work.filter' | transloco }}
+        </button>
+      }
+    </div>
+    @if (canUpload()) {
+      <p class="notice">{{ 'work.textOnly' | transloco }}</p>
+      <label for="source-file">{{ 'work.file' | transloco }}</label
+      ><input id="source-file" type="file" accept=".txt,text/plain" (change)="choose($event)" />
+      <mat-checkbox formControlName="synthetic">{{
+        'work.syntheticConfirm' | transloco
+      }}</mat-checkbox>
+      <div>
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="
+            busy() ||
+            !selectedFile() ||
+            form.invalid ||
+            (form.controls.purpose.value === 'CASE' && !form.controls.caseId.value)
+          "
+        >
+          {{ 'work.upload' | transloco }}
+        </button>
+      </div>
+    }
+  </form>
+</section>
+<section class="panel">
+  <h2>{{ 'work.storedDocuments' | transloco }}</h2>
+  @for (doc of result()?.content ?? []; track doc.id) {
+    <article class="panel">
+      <div class="actions">
+        <h2>{{ doc.filename }}</h2>
+        <span class="status">{{ 'work.state.' + doc.status | transloco }}</span
+        ><button mat-stroked-button (click)="download(doc)" [disabled]="busy()">
+          {{ 'work.download' | transloco }}
+        </button>
+      </div>
+      <p class="muted">{{ doc.sizeBytes }} bytes · {{ doc.createdAt | date: 'medium' }}</p>
+      <p class="meta">SHA-256: {{ doc.sha256 }}</p>
+      @if (doc.errorMessage) {
+        <p role="status">{{ doc.errorMessage }}</p>
+      }
+      @if (fields(doc).length) {
+        <dl>
+          @for (field of fields(doc); track field[0]) {
+            <dt>{{ field[0] }}</dt>
+            <dd>{{ field[1] }}</dd>
+          }
+        </dl>
+      }
+    </article>
+  } @empty {
+    <p>{{ 'work.empty' | transloco }}</p>
+  }
+  <app-workspace-pager
+    [page]="result()?.page ?? 0"
+    [total]="result()?.totalPages ?? 0"
+    [busy]="busy()"
+    (changed)="load($event)"
+  />
+</section>

@@ -1,0 +1,180 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$bankops-typography: (
+  plain-family: ('Inter', 'Segoe UI', system-ui, -apple-system, sans-serif),
+  brand-family: ('Inter', 'Segoe UI', system-ui, -apple-system, sans-serif),
+  bold-weight: 700,
+  medium-weight: 600,
+  regular-weight: 400,
+);
+
+html {
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+        theme-type: light,
+      ),
+      typography: $bankops-typography,
+      density: 0,
+    )
+  );
+
+  --bankops-bg: #f3f5fa;
+  --bankops-surface: #ffffff;
+  --bankops-surface-alt: #f8fafc;
+  --bankops-border: rgba(16, 24, 40, 0.1);
+  --bankops-text: #16202f;
+  --bankops-muted: #5b6779;
+  --bankops-sidebar-bg: #ffffff;
+  --bankops-topbar-bg: rgba(255, 255, 255, 0.86);
+  --bankops-nav-text: #465268;
+  --bankops-nav-icon: #667085;
+  --bankops-nav-hover: #eef2fb;
+  --bankops-nav-active-bg: #e7edff;
+  --bankops-nav-active-text: #2346b8;
+  --bankops-avatar-bg: #e2e9ff;
+  --bankops-avatar-text: #2346b8;
+  --bankops-chip-bg: #eef2f8;
+  --bankops-chip-text: #3c4759;
+  --bankops-accent: #2f55d4;
+  --bankops-success: #1b7f4b;
+  --bankops-success-bg: #e7f6ee;
+  --bankops-warning: #8a5a00;
+  --bankops-warning-bg: #fff6df;
+  --bankops-danger: #b42318;
+  --bankops-danger-bg: #fdeceb;
+  --bankops-chart-bar: #3b5bdb;
+  --bankops-chart-bar-alt: #22a2b8;
+  --bankops-chart-text: #44546a;
+  --bankops-chart-grid: rgba(23, 35, 61, 0.09);
+  --bankops-shadow: 0 10px 30px rgba(16, 24, 40, 0.07);
+}
+
+html.dark-theme {
+  color-scheme: dark;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+        theme-type: dark,
+      ),
+      typography: $bankops-typography,
+      density: 0,
+    )
+  );
+
+  --bankops-bg: #0c111b;
+  --bankops-surface: #121a28;
+  --bankops-surface-alt: #172235;
+  --bankops-border: rgba(255, 255, 255, 0.1);
+  --bankops-text: #e8edf7;
+  --bankops-muted: #9aa8bd;
+  --bankops-sidebar-bg: #0f1622;
+  --bankops-topbar-bg: rgba(12, 17, 27, 0.86);
+  --bankops-nav-text: #b5c1d4;
+  --bankops-nav-icon: #8fa0b8;
+  --bankops-nav-hover: #182337;
+  --bankops-nav-active-bg: #1c2c4d;
+  --bankops-nav-active-text: #b9c9ff;
+  --bankops-avatar-bg: #22335a;
+  --bankops-avatar-text: #c3d2ff;
+  --bankops-chip-bg: #1c283b;
+  --bankops-chip-text: #c5d0e2;
+  --bankops-accent: #8ea6ff;
+  --bankops-success: #6ee7a8;
+  --bankops-success-bg: #103024;
+  --bankops-warning: #ffd166;
+  --bankops-warning-bg: #33280e;
+  --bankops-danger: #ff9b93;
+  --bankops-danger-bg: #3a1b1a;
+  --bankops-chart-bar: #7c9aff;
+  --bankops-chart-bar-alt: #4fd1c5;
+  --bankops-chart-text: #b6c2d6;
+  --bankops-chart-grid: rgba(255, 255, 255, 0.09);
+  --bankops-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bankops-bg);
+  color: var(--bankops-text);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--bankops-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--bankops-accent);
+  outline-offset: 2px;
+}
+
+.language-switch .mat-button-toggle-button {
+  height: 36px;
+}
+
+.language-switch .mat-button-toggle-label-content {
+  line-height: 36px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: var(--bankops-surface);
+  --mdc-outlined-card-container-color: var(--bankops-surface);
+}
+
+.mat-mdc-menu-panel {
+  --mat-menu-container-color: var(--bankops-surface);
+}
+
+.mat-mdc-table {
+  --mat-table-background-color: var(--bankops-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

@@ -1,0 +1,119 @@
+<header>
+  <a routerLink="/cases">← {{ 'work.cases' | transloco }}</a
+  ><button mat-stroked-button (click)="load()" [disabled]="busy()">
+    {{ 'work.refresh' | transloco }}
+  </button>
+</header>
+<app-workspace-status [busy]="busy()" [error]="error()" />
+@if (detail(); as data) {
+  <section class="panel">
+    <h1>{{ data.item.title }}</h1>
+    <p>
+      <span class="status">{{ 'work.state.' + data.item.status | transloco }}</span> ·
+      {{ data.item.reference }} · {{ data.item.department }}
+    </p>
+    <p class="body">{{ data.item.description }}</p>
+    <p class="meta">{{ data.item.id }}</p>
+    <a mat-stroked-button routerLink="/documents" [queryParams]="{ caseId: data.item.id }">{{
+      'work.documents' | transloco
+    }}</a>
+  </section>
+  @if (transactions().length) {
+    <section class="panel">
+      <h2>{{ 'work.transactionEvidence' | transloco }}</h2>
+      <p class="notice">{{ 'work.amlNotice' | transloco }}</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'work.date' | transloco }}</th>
+              <th>{{ 'work.account' | transloco }}</th>
+              <th>{{ 'work.amount' | transloco }}</th>
+              <th>{{ 'work.currency' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of transactions(); track row.id) {
+              <tr>
+                <td>{{ row.occurredAt | date: 'medium' }}</td>
+                <td>{{ row.account }}</td>
+                <td>{{ row.amount | number: '1.2-2' }}</td>
+                <td>{{ row.currency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="meta">
+        {{ 'work.simulationId' | transloco }}: {{ transactions()[0].simulationId }}
+      </p>
+    </section>
+  }
+  @if (editable()) {
+    <section class="panel">
+      <h2>{{ 'work.caseNotes' | transloco }}</h2>
+      <form [formGroup]="noteForm" (ngSubmit)="change('notes')">
+        <mat-form-field
+          ><mat-label>{{ 'work.note' | transloco }}</mat-label
+          ><textarea matInput rows="3" formControlName="note" maxlength="4000"></textarea>
+        </mat-form-field>
+        <div class="actions">
+          <button mat-stroked-button type="submit" [disabled]="busy() || noteForm.invalid">
+            {{ 'work.addNote' | transloco }}
+          </button>
+          @if (has('ADMIN', 'OPERATIONS_OFFICER', 'COMPLIANCE_ANALYST', 'AML_ANALYST')) {
+            <button
+              mat-flat-button
+              type="button"
+              (click)="change('submit')"
+              [disabled]="busy() || noteForm.invalid"
+            >
+              {{ 'work.submitReview' | transloco }}
+            </button>
+          }
+        </div>
+      </form>
+    </section>
+  }
+  @if (data.item.status === 'IN_REVIEW' && has('ADMIN', 'SUPERVISOR')) {
+    <section class="panel">
+      <h2>{{ 'work.humanReview' | transloco }}</h2>
+      <p class="notice">{{ 'work.independentReview' | transloco }}</p>
+      <form [formGroup]="reviewForm">
+        <mat-form-field
+          ><mat-label>{{ 'work.reason' | transloco }}</mat-label
+          ><textarea matInput formControlName="reason" rows="3" maxlength="4000"></textarea>
+        </mat-form-field>
+        <div class="actions">
+          <button
+            mat-flat-button
+            type="button"
+            (click)="review('CLOSE')"
+            [disabled]="busy() || reviewForm.invalid"
+          >
+            {{ 'work.closeCase' | transloco }}</button
+          ><button
+            mat-stroked-button
+            type="button"
+            (click)="review('RETURN')"
+            [disabled]="busy() || reviewForm.invalid"
+          >
+            {{ 'work.returnCase' | transloco }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+  <section class="panel">
+    <h2>{{ 'work.timeline' | transloco }}</h2>
+    <ol class="timeline">
+      @for (event of data.events; track event.id) {
+        <li>
+          <strong>{{ event.action }}</strong>
+          <div class="body">{{ event.note }}</div>
+          <small class="muted">{{ event.actor }} · {{ event.createdAt | date: 'medium' }}</small>
+        </li>
+      }
+    </ol>
+  </section>
+}

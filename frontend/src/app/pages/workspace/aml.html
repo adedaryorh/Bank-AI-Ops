@@ -1,0 +1,52 @@
+<header>
+  <div>
+    <h1>{{ 'work.aml' | transloco }}</h1>
+    <p class="intro">{{ 'work.amlIntro' | transloco }}</p>
+  </div>
+  <button mat-stroked-button (click)="load(result()?.page ?? 0)" [disabled]="busy()">
+    {{ 'work.refresh' | transloco }}
+  </button>
+</header>
+<app-workspace-status [busy]="busy()" [error]="error()" />
+<p class="notice">{{ 'work.amlNotice' | transloco }}</p>
+@if (has('ADMIN', 'AML_ANALYST')) {
+  <section class="panel">
+    <h2>{{ 'work.syntheticSimulation' | transloco }}</h2>
+    <button mat-flat-button (click)="simulate()" [disabled]="busy()">
+      {{ 'work.generate' | transloco }}
+    </button>
+    @if (simulation(); as run) {
+      <p aria-live="polite">
+        {{ 'work.transactions' | transloco }}: {{ run.transactionCount }} ·
+        {{ 'work.alerts' | transloco }}: {{ run.alertCount }}
+      </p>
+      <p class="meta">{{ run.id }}</p>
+    }
+  </section>
+}
+<section class="panel">
+  <h2>{{ 'work.alerts' | transloco }}</h2>
+  @for (alert of result()?.content ?? []; track alert.id) {
+    <article class="panel">
+      <div class="actions">
+        <h2>{{ alert.account }}</h2>
+        <span class="status">{{ 'work.state.' + alert.status | transloco }}</span>
+      </div>
+      <p>
+        <strong>{{ alert.rule }}</strong>
+      </p>
+      <p>{{ alert.rationale }}</p>
+      <a mat-stroked-button [routerLink]="['/cases', alert.caseId]">{{
+        'work.investigate' | transloco
+      }}</a>
+    </article>
+  } @empty {
+    <p>{{ 'work.empty' | transloco }}</p>
+  }
+  <app-workspace-pager
+    [page]="result()?.page ?? 0"
+    [total]="result()?.totalPages ?? 0"
+    [busy]="busy()"
+    (changed)="load($event)"
+  />
+</section>

@@ -1,0 +1,132 @@
+<section class="admin-page" data-testid="admin-users">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'admin.title' | transloco }}</h1>
+      <p class="page-subtitle">{{ 'admin.subtitle' | transloco }}</p>
+    </div>
+    @if (state() === 'ready') {
+      <span class="total-badge">{{ 'admin.total' | transloco: { count: totalElements() } }}</span>
+    }
+  </header>
+
+  @if (state() === 'loading') {
+    <div class="loading-state" aria-busy="true">
+      <mat-progress-bar mode="indeterminate" />
+      <span class="loading-label">{{ 'admin.loading' | transloco }}</span>
+      <div class="skeleton-rows">
+        @for (row of [1, 2, 3, 4, 5]; track row) {
+          <div class="skeleton skeleton-row"></div>
+        }
+      </div>
+    </div>
+  } @else if (state() === 'error') {
+    @if (isForbidden()) {
+      <mat-card appearance="outlined" class="state-card forbidden-state" data-testid="admin-forbidden">
+        <div class="state-icon"><app-icon name="lock" [size]="28" /></div>
+        <h2>{{ 'admin.forbiddenTitle' | transloco }}</h2>
+        <p class="state-message">{{ 'admin.forbiddenBody' | transloco }}</p>
+        @if (error()?.detail) {
+          <p class="api-detail">{{ error()?.detail }}</p>
+        }
+        <a mat-flat-button routerLink="/">
+          <app-icon name="arrowBack" [size]="18" />
+          <span>{{ 'admin.back' | transloco }}</span>
+        </a>
+      </mat-card>
+    } @else {
+      <mat-card appearance="outlined" class="state-card" data-testid="admin-error">
+        <div class="state-icon error-icon"><app-icon name="warning" [size]="28" /></div>
+        <h2>{{ 'admin.errorTitle' | transloco }}</h2>
+        <p class="state-message">{{ errorMessage() }}</p>
+        <dl class="error-meta">
+          @if (error()?.status !== null && error()?.status !== undefined) {
+            <div>
+              <dt>{{ 'errors.status' | transloco }}</dt>
+              <dd>{{ error()?.status }}</dd>
+            </div>
+          }
+          @if (error()?.correlationId) {
+            <div>
+              <dt>{{ 'errors.correlationId' | transloco }}</dt>
+              <dd class="mono">{{ error()?.correlationId }}</dd>
+            </div>
+          }
+        </dl>
+        <button mat-flat-button color="primary" type="button" (click)="load()">
+          <app-icon name="refresh" [size]="18" />
+          <span>{{ 'admin.retry' | transloco }}</span>
+        </button>
+      </mat-card>
+    }
+  } @else {
+    @if (users().length === 0) {
+      <mat-card appearance="outlined" class="state-card" data-testid="admin-empty">
+        <div class="state-icon"><app-icon name="users" [size]="28" /></div>
+        <h2>{{ 'admin.emptyTitle' | transloco }}</h2>
+        <p class="state-message">{{ 'admin.emptyBody' | transloco }}</p>
+      </mat-card>
+    } @else {
+      <mat-card appearance="outlined" class="table-card">
+        <div class="table-scroll">
+          <table mat-table [dataSource]="users()" class="users-table">
+            <ng-container matColumnDef="displayName">
+              <th mat-header-cell *matHeaderCellDef>{{ 'admin.name' | transloco }}</th>
+              <td mat-cell *matCellDef="let user">{{ user.displayName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>{{ 'admin.email' | transloco }}</th>
+              <td mat-cell *matCellDef="let user" class="email-cell">{{ user.email }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="department">
+              <th mat-header-cell *matHeaderCellDef>{{ 'admin.department' | transloco }}</th>
+              <td mat-cell *matCellDef="let user">
+                <span class="department">{{ user.department ?? '—' }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="roles">
+              <th mat-header-cell *matHeaderCellDef>{{ 'admin.roles' | transloco }}</th>
+              <td mat-cell *matCellDef="let user">
+                <span class="role-chips">
+                  @for (role of user.roles; track role) {
+                    <span class="role-chip">{{ ('roles.' + role) | transloco }}</span>
+                  } @empty {
+                    <span class="muted">—</span>
+                  }
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>{{ 'admin.createdAt' | transloco }}</th>
+              <td mat-cell *matCellDef="let user" class="date-cell">
+                {{ formatDateTime(user.createdAt) }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="lastSeenAt">
+              <th mat-header-cell *matHeaderCellDef>{{ 'admin.lastSeenAt' | transloco }}</th>
+              <td mat-cell *matCellDef="let user" class="date-cell">
+                {{ user.lastSeenAt ? formatDateTime(user.lastSeenAt) : ('admin.never' | transloco) }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          [length]="totalElements()"
+          [pageSize]="size()"
+          [pageSizeOptions]="[10, 20, 50]"
+          [pageIndex]="page()"
+          [showFirstLastButtons]="true"
+          (page)="onPage($event)"
+        />
+      </mat-card>
+    }
+  }
+</section>

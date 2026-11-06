@@ -1,0 +1,92 @@
+<header>
+  <div>
+    <h1>{{ 'work.activity' | transloco }}</h1>
+    <p class="intro">{{ 'work.activityIntro' | transloco }}</p>
+  </div>
+  <button mat-stroked-button (click)="load()" [disabled]="busy()">
+    {{ 'work.refresh' | transloco }}
+  </button>
+</header>
+<app-workspace-status [busy]="busy()" [error]="error()" />
+@if (audit(); as data) {
+  <section class="panel">
+    <h2>{{ 'work.audit' | transloco }}</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'work.date' | transloco }}</th>
+            <th>{{ 'work.actor' | transloco }}</th>
+            <th>{{ 'work.action' | transloco }}</th>
+            <th>{{ 'work.resource' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of data.content; track row.id) {
+            <tr>
+              <td>{{ row.occurredAt | date: 'short' }}</td>
+              <td>{{ row.actorEmail }}</td>
+              <td>{{ row.action }}<br />{{ row.outcome }}</td>
+              <td class="meta">
+                {{ row.targetType }} {{ row.targetId }}<br />{{ row.correlationId }}
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4">{{ 'work.empty' | transloco }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-workspace-pager
+      [page]="data.page"
+      [total]="data.totalPages"
+      [busy]="busy()"
+      (changed)="auditPage($event)"
+    />
+  </section>
+}
+<section class="panel">
+  <h2>{{ 'work.executions' | transloco }}</h2>
+  <p>{{ 'work.executionScope' | transloco }}</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'work.date' | transloco }}</th>
+          <th>{{ 'work.operation' | transloco }}</th>
+          <th>{{ 'work.model' | transloco }}</th>
+          <th>{{ 'work.status' | transloco }}</th>
+          <th>{{ 'work.duration' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of executions()?.content ?? []; track row.id) {
+          <tr>
+            <td>{{ row.createdAt | date: 'short' }}</td>
+            <td>
+              {{ row.operation }}<br /><small>{{ row.promptVersion }}</small>
+            </td>
+            <td>{{ row.model }}</td>
+            <td>{{ row.status }}</td>
+            <td>
+              {{ row.durationMs }} ms<br />{{ 'work.tokens' | transloco }}:
+              {{ row.tokenUsage ?? '—' }}
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">{{ 'work.empty' | transloco }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <app-workspace-pager
+    [page]="executions()?.page ?? 0"
+    [total]="executions()?.totalPages ?? 0"
+    [busy]="busy()"
+    (changed)="executionPage($event)"
+  />
+</section>

@@ -1,0 +1,94 @@
+<header>
+  <div>
+    <h1>{{ 'work.cases' | transloco }}</h1>
+    <p class="intro">{{ 'work.casesIntro' | transloco }}</p>
+  </div>
+  <button mat-stroked-button (click)="load(result()?.page ?? 0)" [disabled]="busy()">
+    {{ 'work.refresh' | transloco }}
+  </button>
+</header>
+<app-workspace-status [busy]="busy()" [error]="error()" />
+<p class="notice">{{ 'work.humanNotice' | transloco }}</p>
+@if (has('ADMIN', 'OPERATIONS_OFFICER', 'COMPLIANCE_ANALYST')) {
+  <section class="panel">
+    <h2>{{ 'work.createCase' | transloco }}</h2>
+    <form [formGroup]="form" (ngSubmit)="create()" class="stack">
+      <div class="grid">
+        <mat-form-field
+          ><mat-label>{{ 'work.title' | transloco }}</mat-label
+          ><input matInput formControlName="title" maxlength="180"
+        /></mat-form-field>
+        <mat-form-field
+          ><mat-label>{{ 'work.kind' | transloco }}</mat-label
+          ><mat-select formControlName="kind"
+            ><mat-option value="OPERATIONS">{{ 'work.operations' | transloco }}</mat-option>
+            @if (has('ADMIN', 'COMPLIANCE_ANALYST')) {
+              <mat-option value="COMPLIANCE">{{ 'work.compliance' | transloco }}</mat-option>
+            }
+          </mat-select></mat-form-field
+        >
+        <mat-form-field
+          ><mat-label>{{ 'work.reference' | transloco }}</mat-label
+          ><input matInput formControlName="reference" placeholder="SYN-CASE-001"
+        /></mat-form-field>
+      </div>
+      <mat-form-field
+        ><mat-label>{{ 'work.description' | transloco }}</mat-label
+        ><textarea matInput formControlName="description" rows="3" maxlength="10000"></textarea>
+      </mat-form-field>
+      <mat-checkbox formControlName="synthetic">{{
+        'work.syntheticConfirm' | transloco
+      }}</mat-checkbox>
+      <div>
+        <button mat-flat-button type="submit" [disabled]="busy() || form.invalid">
+          {{ 'work.createCase' | transloco }}
+        </button>
+      </div>
+    </form>
+  </section>
+}
+<section class="panel">
+  <div class="actions">
+    <h2>{{ 'work.caseList' | transloco }}</h2>
+    <mat-checkbox [checked]="reviewOnly()" (change)="filter($event.checked)" [disabled]="busy()">{{
+      'work.reviewQueue' | transloco
+    }}</mat-checkbox>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'work.title' | transloco }}</th>
+          <th>{{ 'work.reference' | transloco }}</th>
+          <th>{{ 'work.department' | transloco }}</th>
+          <th>{{ 'work.status' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of result()?.content ?? []; track item.id) {
+          <tr>
+            <td>
+              <a [routerLink]="['/cases', item.id]">{{ item.title }}</a>
+              <div class="muted">{{ item.kind }}</div>
+            </td>
+            <td>{{ item.reference }}</td>
+            <td>{{ item.department }}</td>
+            <td>
+              <span class="status">{{ 'work.state.' + item.status | transloco }}</span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4">{{ 'work.empty' | transloco }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <app-workspace-pager
+    [page]="result()?.page ?? 0"
+    [total]="result()?.totalPages ?? 0"
+    [busy]="busy()"
+    (changed)="load($event)"
+  />
+</section>
