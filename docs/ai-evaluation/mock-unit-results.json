@@ -1,0 +1,1 @@
+{"prompt_injection_pass_rate":1.0,"citation_resolution":1.0,"injection_cases":9,"citation_cases":4,"scope":"Deterministic unit evaluation only; storage-backed citation integrity requires WorkspaceIntegrationTest and is not measured by this unit run.","extraction_field_accuracy":1.0,"field_checks":20}
